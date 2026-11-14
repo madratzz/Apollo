@@ -40,7 +40,7 @@ CR_NAME=Apollo_ACK-Q
 CR_JOBS=$(nproc --all)
 # Target Android version
 CR_ANDROID=q
-CR_PLATFORM=13.0.0
+CR_PLATFORM=10.0.0
 # Target ARCH
 CR_ARCH=arm64
 # Current Date
@@ -68,7 +68,7 @@ CR_CONFIG_SPLIT=NULL
 CR_CONFIG_APOLLO=apollo_defconfig
 CR_CONFIG_INTL=eur_defconfig
 CR_CONFIG_KOR=kor_defconfig
-CR_SELINUX="1"
+CR_SELINUX="0"
 CR_KSU="n"
 CR_CLEAN="n"
 # Compiler Paths
@@ -225,9 +225,9 @@ BUILD_ZIMAGE()
 	echo "Make Kernel with $CR_COMPILER"
 	$compile -j$CR_JOBS
 	if [ ! -e $CR_KERNEL ]; then
-	exit 0;
 	echo "Image Failed to Compile"
 	echo " Abort "
+	exit 1;
 	fi
 	du -k "$CR_KERNEL" | cut -f1 >sizT
 	sizT=$(head -n 1 sizT)
@@ -244,9 +244,9 @@ BUILD_DTB()
 	echo "Checking DTB for $CR_VARIANT"
 	# This source does compiles dtbs while doing Image
 	if [ ! -e $CR_DTB ]; then
-        exit 0;
         echo "DTB Failed to Compile"
         echo " Abort "
+        exit 1;
 	else
         echo "DTB Compiled at $CR_DTB"
 	fi
@@ -274,12 +274,12 @@ PACK_BOOT_IMG()
 	# Create boot.img
 	$CR_AIK/repackimg.sh
 	if [ ! -e $CR_AIK/image-new.img ]; then
-        exit 0;
         echo "Boot Image Failed to pack"
         echo " Abort "
+        exit 1;
 	fi
 	# Remove red warning at boot
-	echo -n "SEANDROIDENFORCE" » $CR_AIK/image-new.img
+	echo -n "SEANDROIDENFORCE" >> $CR_AIK/image-new.img
 	# Copy boot.img to Production folder
 	if [ ! -e $CR_PRODUCT ]; then
         mkdir $CR_PRODUCT
@@ -421,7 +421,7 @@ CR_BASE_DTB=$CR_OUTZIP/floyd/G960F-dtb
 # Check packages
 if ! dpkg-query -W -f='${Status}' bsdiff  | grep "ok installed"; then 
 	echo " bsdiff is missing, please install with sudo apt install bsdiff" 
-	exit 0; 
+	exit 1;
 fi
 
 # Initalize with base image (Starlte)
@@ -438,9 +438,10 @@ if [ "$CR_TARGET" = "1" ]; then # Always must run ONCE during BUILD_ALL otherwis
 	echo " Copying $CR_BASE_DTB "
 	echo " "
 	if [ ! -e $CR_KERNEL ] || [ ! -e $CR_DTB ]; then
-        exit 0;
+
         echo " Kernel not found!"
         echo " Abort "
+        exit 1;
 	else
         cp $CR_KERNEL $CR_BASE_KERNEL
         cp $CR_DTB $CR_BASE_DTB
@@ -456,17 +457,17 @@ if [ ! "$CR_TARGET" = "1" ]; then # Generate patch files for non starlte kernels
 	if [ ! -e $CR_KERNEL ] || [ ! -e $CR_DTB ]; then
         echo " Kernel not found! "
         echo " Abort "
-        exit 0;
+        exit 1;
 	else
 		bsdiff $CR_BASE_KERNEL $CR_KERNEL $CR_OUTZIP/floyd/$CR_VARIANT-kernel
 		if [ ! -e $CR_OUTZIP/floyd/$CR_VARIANT-kernel ]; then
 			echo "ERROR: bsdiff $CR_BASE_KERNEL $CR_KERNEL $CR_OUTZIP/floyd/$CR_VARIANT-kernel Failed!"
-			exit 0;
+			exit 1;
 		fi
 		bsdiff $CR_BASE_DTB $CR_DTB $CR_OUTZIP/floyd/$CR_VARIANT-dtb
-		if [ ! -e $CR_OUTZIP/floyd/$CR_VARIANT-kernel ]; then
-			echo "ERROR: bsdiff $CR_BASE_KERNEL $CR_DTB $CR_OUTZIP/floyd/$CR_VARIANT-dtb Failed!"
-			exit 0;
+		if [ ! -e $CR_OUTZIP/floyd/$CR_VARIANT-dtb ]; then
+			echo "ERROR: bsdiff $CR_BASE_DTB $CR_DTB $CR_OUTZIP/floyd/$CR_VARIANT-dtb Failed!"
+			exit 1;
 		fi
 	fi
 fi
