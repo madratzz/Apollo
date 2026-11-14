@@ -1751,6 +1751,13 @@ static int fix_green(struct panel_device *panel) {
     ret = panel_doze(panel, PANEL_IOC_DOZE);
     if (ret) {
         panel_err("PANEL:ERR:%s:failed to enter alpm\n", __func__);
+        /*
+         * panel_doze() can record ALPM in cur_state even when a step
+         * failed; leave ALPM so the display doesn't come on dimmed.
+         */
+        if (panel->state.cur_state == PANEL_STATE_ALPM &&
+            panel_sleep_out(panel))
+            panel_err("PANEL:ERR:%s:failed to recover from alpm\n", __func__);
         return ret;
     }
 

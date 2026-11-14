@@ -2969,7 +2969,8 @@ static ssize_t isc_defect_store(struct device *dev,
 
 #endif
 
-int fix_green_screen = 0;
+/* On by default: stock userspace never writes this node. */
+int fix_green_screen = 1;
 
 static ssize_t fix_green_screen_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
@@ -2984,10 +2985,13 @@ static ssize_t fix_green_screen_store(struct device *dev,
 {
 	int rc;
 
-	rc = kstrtouint(buf, 0, &fix_green_screen);
+	bool val;
+
+	rc = kstrtobool(buf, &val);
 	if (rc < 0)
 		return rc;
 
+	fix_green_screen = val;
 	dev_info(dev, "%s: %d\n", __func__, fix_green_screen);
 
 	return size;
