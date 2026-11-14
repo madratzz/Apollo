@@ -1,0 +1,60 @@
+name: Build crownlte (N960F) kernel - Android 10
+
+on:
+  push:
+    branches: [ q-build ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-9-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+            bc bison flex libssl-dev libelf-dev python2 python-is-python3 cpio lz4 device-tree-compiler
+          mkdir -p $HOME/tc/bin
+          for t in gcc cpp; do ln -sf /usr/bin/aarch64-linux-gnu-$t-9 $HOME/tc/bin/aarch64-linux-gnu-$t; done
+          for t in ld ld.bfd as ar nm objcopy objdump strip readelf ranlib; do ln -sf /usr/bin/aarch64-linux-gnu-$t $HOME/tc/bin/aarch64-linux-gnu-$t; done
+          echo "$HOME/tc/bin" >> $GITHUB_PATH
+
+      - name: Generate config (N960F, EUR, SELinux enforcing, no KSU)
+        run: |
+          C=arch/arm64/configs
+          cat $C/exynos9810_defconfig $C/crownlte_defconfig $C/eur_defconfig $C/apollo_defconfig > $C/tmp_defconfig
+          echo "# CONFIG_KSU is not set" >> $C/tmp_defconfig
+
+      - name: Build
+        env:
+          ARCH: arm64
+          CROSS_COMPILE: aarch64-linux-gnu-
+          ANDROID_MAJOR_VERSION: q
+          PLATFORM_VERSION: "10.0.0"
+          CONFIG_MACH_EXYNOS9810_CROWNLTE_EUR_OPEN: "y"
+          LOCALVERSION: -Apollo-Q-N960F
+        run: |
+          make tmp_defconfig
+          make -j$(nproc) 2>&1 | tee build.log
+          test -f arch/arm64/boot/Image
+          test -f arch/arm64/boot/dtb.img
+
+      - name: Collect warnings
+        if: always()
+        run: grep -E "warning:|error:" build.log | sort | uniq -c | sort -rn | head -200 > warnings.txt || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: crownlte-q-kernel
+          path: |
+            arch/arm64/boot/Image
+            arch/arm64/boot/dtb.img
+            .config
+            build.log
+            warnings.txt
