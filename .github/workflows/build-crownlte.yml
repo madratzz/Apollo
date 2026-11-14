@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-9-aarch64-linux-gnu binutils-aarch64-linux-gnu \
-            bc bison flex libssl-dev libelf-dev python2 python-is-python3 cpio lz4 device-tree-compiler
+            bc bison flex libssl-dev libelf-dev python2 python-is-python3 cpio lz4 device-tree-compiler ccache
           mkdir -p $HOME/tc/bin
           for t in gcc cpp; do ln -sf /usr/bin/aarch64-linux-gnu-$t-9 $HOME/tc/bin/aarch64-linux-gnu-$t; done
           for t in ld ld.bfd as ar nm objcopy objdump strip readelf ranlib; do ln -sf /usr/bin/aarch64-linux-gnu-$t $HOME/tc/bin/aarch64-linux-gnu-$t; done
@@ -39,6 +39,7 @@ jobs:
           CONFIG_MACH_EXYNOS9810_CROWNLTE_EUR_OPEN: "y"
           LOCALVERSION: -Apollo-Q-N960F
         run: |
+          set -o pipefail
           make tmp_defconfig
           make -j$(nproc) 2>&1 | tee build.log
           test -f arch/arm64/boot/Image
