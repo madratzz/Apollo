@@ -656,11 +656,8 @@ struct decon_win_config_data_old {
 struct decon_win_config_data {
 	int	retire_fence;
 	int	fd_odma;
-#ifdef CONFIG_SUPPORT_DSU
+	/* Q HWC ABI: always 8 slots, no extra => 1608 bytes */
 	struct decon_win_config config[MAX_DECON_WIN + 2];
-#else
-	struct decon_win_config config[MAX_DECON_WIN + 1];
-#endif
 #ifdef CONFIG_DECON_WIN_CONFIG_EXTRA
 	struct decon_win_config_extra extra;
 #endif

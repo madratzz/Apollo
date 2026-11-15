@@ -2762,6 +2762,7 @@ static int decon_ioctl(struct fb_info *info, unsigned int cmd,
 	case S3CFB_WIN_CONFIG_OLD:
 		memset(&win_data, 0, sizeof(struct decon_win_config_data));
 	case S3CFB_WIN_CONFIG:
+		BUILD_BUG_ON(sizeof(struct decon_win_config_data) != 1608);
 		DPU_EVENT_LOG(DPU_EVT_WIN_CONFIG, &decon->sd, ktime_set(0, 0));
 		decon_systrace(decon, 'C', "decon_win_config", 1);
 		if (copy_from_user(&win_data, (void __user *)arg, _IOC_SIZE(cmd))) {
