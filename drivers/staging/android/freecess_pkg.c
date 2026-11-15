@@ -11,6 +11,7 @@
 #include <linux/time.h>
 #include <linux/list.h>
 #include <linux/types.h>
+#include <linux/seq_file.h>
 #include <net/sock.h>
 #include <net/ip.h>
 #include <net/tcp.h>
@@ -22,6 +23,18 @@
 #define MAX_REC_UID 64
 static atomic_t uid_rec[MAX_REC_UID];
 extern void binders_in_transcation(int uid);
+
+int pkg_stat_show(struct seq_file *m, void *v)
+{
+	int i;
+
+	for (i = 0; i < MAX_REC_UID; i++)
+		if (atomic_read(&uid_rec[i]))
+			seq_printf(m, "%d\t", atomic_read(&uid_rec[i]));
+	seq_printf(m, "\n");
+
+	return 0;
+}
 
 static void freecess_add_uid(uid_t uid)
 {
