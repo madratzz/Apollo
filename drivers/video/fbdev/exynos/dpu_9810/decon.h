@@ -661,7 +661,9 @@ struct decon_win_config_data {
 #else
 	struct decon_win_config config[MAX_DECON_WIN + 1];
 #endif
+#ifdef CONFIG_DECON_WIN_CONFIG_EXTRA
 	struct decon_win_config_extra extra;
+#endif
 };
 
 enum hwc_ver {

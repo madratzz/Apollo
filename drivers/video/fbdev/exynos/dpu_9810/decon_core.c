@@ -2610,8 +2610,10 @@ static int decon_set_win_config(struct decon_device *decon,
 	list_add_tail(&regs->list, &decon->up.list);
 	decon->update_regs_list_cnt++;
 	atomic_inc(&decon->up.remaining_frame);
+#ifdef CONFIG_DECON_WIN_CONFIG_EXTRA
 	win_data->extra.remained_frames =
 		atomic_read(&decon->up.remaining_frame);
+#endif
 	mutex_unlock(&decon->up.lock);
 	kthread_queue_work(&decon->up.worker, &decon->up.work);
 
@@ -2643,7 +2645,9 @@ err_prepare:
 		put_unused_fd(win_data->retire_fence);
 	}
 	win_data->retire_fence = -1;
+#ifdef CONFIG_DECON_WIN_CONFIG_EXTRA
 	win_data->extra.remained_frames = -1;
+#endif
 
 	for (i = 0; i < decon->dt.max_win; i++)
 		for (j = 0; j < regs->plane_cnt[i]; ++j)
