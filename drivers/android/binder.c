@@ -5842,8 +5842,8 @@ static void binder_in_transaction(struct binder_proc *proc, int uid)
 {
 	struct rb_node *n = NULL;
 	struct binder_thread *thread = NULL;
+	struct task_struct *tsk = NULL;
 	struct binder_transaction *t = NULL;
-	struct binder_work *w = NULL;
 	bool empty = true;
 	bool found = false;
 
@@ -5852,100 +5852,49 @@ static void binder_in_transaction(struct binder_proc *proc, int uid)
 	for (n = rb_first(&proc->threads); n != NULL; n = rb_next(n)) {
 		thread = rb_entry(n, struct binder_thread, rb_node);
 		empty = binder_worklist_empty_ilocked(&thread->todo);
-		if (!empty) {
-			list_for_each_entry(w, &thread->todo, entry) {
-				if (w->type == BINDER_WORK_TRANSACTION) {
-					t = container_of(w, struct binder_transaction, work);
-					if (!(t->flags & TF_ONE_WAY)) {
-						found = true;
-						break;
-					}
-				}
-				else if (w->type != BINDER_WORK_TRANSACTION_COMPLETE && w->type != BINDER_WORK_NODE) {
-					found = true;
-					break;
-				}
-			}
+		tsk = thread->task;
 
-			if (found == true) {
+		if (tsk != NULL) {
+			//have some binders to do
+			if (!empty) {
+				//report uid to FW, only report one time
+				uid = task_euid(tsk).val;
 				binder_inner_proc_unlock(proc);
 				cfb_report(uid, "thread");
 				return;
 			}
-		}
 
-		//processing one binder call
-		t = thread->transaction_stack;
-		if (t) {
-			if (t->to_thread == thread) {
-				binder_inner_proc_unlock(proc);
-				cfb_report(uid, "transaction_stack");
-				return;
+			//processing one binder call
+			t = thread->transaction_stack;
+			if (t) {
+				spin_lock(&t->lock);
+				if (t->to_thread == thread) {
+					//check incoming, it has one
+					found = true;
+					uid = task_euid(tsk).val;
+				}
+				spin_unlock(&t->lock);
+				if (found == true) {
+					//report uid to FW, only report one time
+					binder_inner_proc_unlock(proc);
+					cfb_report(uid, "transaction_stack");
+					return;
+				}
 			}
 		}
 	}
 
 	//check binder proc todo list
-#ifdef CONFIG_FAST_TRACK
-        empty = binder_proc_worklist_empty_ilocked(proc);
-	if (!empty) {
-		list_for_each_entry(w, &proc->todo, entry) {
-			if (w->type == BINDER_WORK_TRANSACTION) {
-				t = container_of(w, struct binder_transaction, work);
-				if (!(t->flags & TF_ONE_WAY)) {
-					found = true;
-					break;
-				}
-			}
-			else if (w->type != BINDER_WORK_TRANSACTION_COMPLETE && w->type != BINDER_WORK_NODE) {
-				found = true;
-				break;
-			}
-		}
-		list_for_each_entry(w, &proc->fg_todo, entry) {
-			if (w->type == BINDER_WORK_TRANSACTION) {
-				t = container_of(w, struct binder_transaction, work);
-				if (!(t->flags & TF_ONE_WAY)) {
-					found = true;
-					break;
-				}
-			}
-			else if (w->type != BINDER_WORK_TRANSACTION_COMPLETE && w->type != BINDER_WORK_NODE) {
-				found = true;
-				break;
-			}
-		}
-		if (found == true) {
-			binder_inner_proc_unlock(proc);
-			cfb_report(uid, "proc");
-			return;
-		}
-	}
-#else
 	empty = binder_worklist_empty_ilocked(&proc->todo);
-	if (!empty) {
-		list_for_each_entry(w, &proc->todo, entry) {
-			if (w->type == BINDER_WORK_TRANSACTION) {
-				t = container_of(w, struct binder_transaction, work);
-				if (!(t->flags & TF_ONE_WAY)) {
-					found = true;
-					break;
-				}
-			}
-			else if (w->type != BINDER_WORK_TRANSACTION_COMPLETE && w->type != BINDER_WORK_NODE) {
-				found = true;
-				break;
-			}
-		}
-
-		if (found == true) {
-			binder_inner_proc_unlock(proc);
-			cfb_report(uid, "proc");
-			return;
-		}
+	tsk = proc->tsk;
+	if (tsk != NULL && !empty) {
+		//report uid to FW
+		uid = task_euid(tsk).val;
+		binder_inner_proc_unlock(proc);
+		cfb_report(uid, "proc");
 	}
-#endif
-	binder_inner_proc_unlock(proc);
+	else
+		binder_inner_proc_unlock(proc);
 }
 
 void binders_in_transcation(int uid)
