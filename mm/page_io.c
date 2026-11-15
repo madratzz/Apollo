@@ -231,6 +231,23 @@ bad_bmap:
 	goto out;
 }
 
+#ifdef CONFIG_VNSWAP
+/*
+ * vnswap is a fake swap device: its pages are meant to live in zswap
+ * (frontswap) only and must never be written to the device itself.
+ * The Samsung source skipped the write for every swap device when
+ * CONFIG_VNSWAP is set; restrict that to the vnswap disk so that other
+ * swap devices (zram) keep working in the same kernel.
+ */
+static bool swap_page_on_vnswap(struct page *page)
+{
+	struct swap_info_struct *sis = page_swap_info(page);
+
+	return (sis->flags & SWP_BLKDEV) && sis->bdev && sis->bdev->bd_disk &&
+		!strncmp(sis->bdev->bd_disk->disk_name, "vnswap", 6);
+}
+#endif
+
 /*
  * We may have stale swap cache pages in memory: notice
  * them here and get rid of the unnecessary final write.
@@ -249,6 +266,15 @@ int swap_writepage(struct page *page, struct writeback_control *wbc)
 		end_page_writeback(page);
 		goto out;
 	}
+#ifdef CONFIG_VNSWAP
+	if (swap_page_on_vnswap(page)) {
+		/* zswap rejected the page: keep it in memory, still dirty */
+		set_page_dirty(page);
+		ClearPageReclaim(page);
+		unlock_page(page);
+		goto out;
+	}
+#endif
 	ret = __swap_writepage(page, wbc, end_swap_bio_write);
 out:
 	return ret;
