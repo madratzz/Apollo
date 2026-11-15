@@ -4322,6 +4322,19 @@
 		booster_key@1 {
 			input_booster,label = "key";
 			input_booster,type = <0>;	/* BOOSTER_DEVICE_KEY */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1>;
+			input_booster,cpu_freqs = <1066000>;
+			input_booster,hmp_boost = <1>;
+			input_booster,kfc_freqs = <0>;
+			input_booster,mif_freqs = <0>;
+			input_booster,int_freqs = <0>;
+			input_booster,dma_latency = <0>;
+			input_booster,head_times = <500>;
+			input_booster,tail_times = <500>;
+			input_booster,phase_times = <0>;
+
 			/* Time table */
 			input_booster,head_time = <500>;
 			input_booster,tail_time = <500>;
@@ -4365,6 +4378,19 @@
 		booster_key@2 {
 			input_booster,label = "touchkey";
 			input_booster,type = <1>;	/* BOOSTER_DEVICE_TOUCHKEY */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1>;
+			input_booster,cpu_freqs = <1066000>;
+			input_booster,hmp_boost = <1>;
+			input_booster,kfc_freqs = <0>;
+			input_booster,mif_freqs = <0>;
+			input_booster,int_freqs = <0>;
+			input_booster,dma_latency = <0>;
+			input_booster,head_times = <0>;
+			input_booster,tail_times = <200>;
+			input_booster,phase_times = <0>;
+
 			/* Time table */
 			input_booster,head_time = <0>;
 			input_booster,tail_time = <200>;
@@ -4408,6 +4434,19 @@
 		booster_key@3 {
 			input_booster,label = "touch";
 			input_booster,type = <2>;	/* BOOSTER_DEVICE_TOUCH */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2 3>;
+			input_booster,cpu_freqs = <1066000 1066000 858000>;
+			input_booster,hmp_boost = <1 1 1>;
+			input_booster,kfc_freqs = <832000 832000 832000>;
+			input_booster,mif_freqs = <0 0 0>;
+			input_booster,int_freqs = <0 0 0>;
+			input_booster,dma_latency = <0 0 0>;
+			input_booster,head_times = <130 130 0>;
+			input_booster,tail_times = <0 0 500>;
+			input_booster,phase_times = <0 0 0>;
+
 			/* Time table */
 			input_booster,head_time = <130>;
 			input_booster,tail_time = <500>;
@@ -4451,6 +4490,19 @@
 		booster_key@4 { // Input Booster +
 			input_booster,label = "multitouch";
 			input_booster,type = <3>;	/* BOOSTER_DEVICE_MULTITOUCH */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2>;
+			input_booster,cpu_freqs = <1066000 858000>;
+			input_booster,hmp_boost = <1 1>;
+			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+			input_booster,dma_latency = <0 0>;
+			input_booster,head_times = <1000 0>;
+			input_booster,tail_times = <0 500>;
+			input_booster,phase_times = <0 0>;
+
 			/* Time table */
 			input_booster,head_time = <1000>;
 			input_booster,tail_time = <500>;
@@ -4494,6 +4546,19 @@
 		booster_key@5 {
 			input_booster,label = "keyboard";
 			input_booster,type = <4>;	/* BOOSTER_DEVICE_KEYBOARD */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2>;
+			input_booster,cpu_freqs = <1066000 1066000>;
+			input_booster,hmp_boost = <1 1>;
+			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+			input_booster,dma_latency = <0 0>;
+			input_booster,head_times = <130 130>;
+			input_booster,tail_times = <0 0>;
+			input_booster,phase_times = <0 0>;
+
 			/* Time table */
 			input_booster,head_time = <130>;
 			input_booster,tail_time = <0>;
@@ -4537,6 +4602,19 @@
 		booster_key@6 {
 			input_booster,label = "mouse";
 			input_booster,type = <5>;	/* BOOSTER_DEVICE_MOUSE */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2>;
+			input_booster,cpu_freqs = <1066000 858000>;
+			input_booster,hmp_boost = <1 1>;
+			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+			input_booster,dma_latency = <0 0>;
+			input_booster,head_times = <130 0>;
+			input_booster,tail_times = <0 500>;
+			input_booster,phase_times = <0 0>;
+
 			/* Time table */
 			input_booster,head_time = <130>;
 			input_booster,tail_time = <500>;
@@ -4580,6 +4658,19 @@
 		booster_key@7 {
 			input_booster,label = "mouse_wheel";
 			input_booster,type = <6>;	/* BOOSTER_DEVICE_MOUSE */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2>;
+			input_booster,cpu_freqs = <1066000 0>;
+			input_booster,hmp_boost = <1 0>;
+			input_booster,kfc_freqs = <832000 0>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+			input_booster,dma_latency = <0 0>;
+			input_booster,head_times = <130 0>;
+			input_booster,tail_times = <0 0>;
+			input_booster,phase_times = <0 0>;
+
 			/* Time table */
 			input_booster,head_time = <130>;
 			input_booster,tail_time = <0>;
@@ -4623,6 +4714,19 @@
 		booster_key@8 {
 			input_booster,label = "pen_hover";
 			input_booster,type = <7>;	/* BOOSTER_DEVICE_MOUSE */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2>;
+			input_booster,cpu_freqs = <1066000 858000>;
+			input_booster,hmp_boost = <1 1>;
+			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+			input_booster,dma_latency = <0 0>;
+			input_booster,head_times = <130 0>;
+			input_booster,tail_times = <0 500>;
+			input_booster,phase_times = <0 0>;
+
 			/* Time table */
 			input_booster,head_time = <130>;
 			input_booster,tail_time = <500>;
@@ -4666,6 +4770,19 @@
 		booster_key@9 {
 			input_booster,label = "pen";
 			input_booster,type = <8>;	/* BOOSTER_DEVICE_MOUSE */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1 2>;
+			input_booster,cpu_freqs = <1170000 858000>;
+			input_booster,hmp_boost = <1 1>;
+			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+			input_booster,dma_latency = <0 0>;
+			input_booster,head_times = <200 0>;
+			input_booster,tail_times = <0 600>;
+			input_booster,phase_times = <0 0>;
+
 			/* Time table */
 			input_booster,head_time = <200>;
 			input_booster,tail_time = <600>;
@@ -4709,6 +4826,19 @@
 		booster_key@10 {
 			input_booster,label = "key_two";
 			input_booster,type = <9>;	/* BOOSTER_DEVICE_KEY */
+
+			/* Stock (Android 10) booster tables, parsed by drivers/input/input.c */
+			input_booster,levels = <1>;
+			input_booster,cpu_freqs = <1469000>;
+			input_booster,hmp_boost = <1>;
+			input_booster,kfc_freqs = <1053000>;
+			input_booster,mif_freqs = <0>;
+			input_booster,int_freqs = <0>;
+			input_booster,dma_latency = <0>;
+			input_booster,head_times = <700>;
+			input_booster,tail_times = <700>;
+			input_booster,phase_times = <0>;
+
 			/* Time table */
 			input_booster,head_time = <700>;
 			input_booster,tail_time = <700>;

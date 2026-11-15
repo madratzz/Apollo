@@ -274,13 +274,17 @@ config SEC_AUTO_INPUT
 	  module will be called autoinput.
 
 config SEC_INPUT_BOOSTER
-	bool "SEC INPUT BOOSTER"
-	depends on INPUT_EVDEV
-	default y
+	bool "SEC INPUT BOOSTER (Android 11 evdev booster, not wired up)"
+	depends on INPUT_EVDEV && BROKEN
+	default n
 	help
-	  Say Y here if you need to enable Input Booster.
+	  Android 11 style input booster (input_booster.c) that is meant to
+	  be triggered from the evdev module.
 
-	  It's triggered in evdev module.
+	  The evdev hook (evdev_booster.c) was never wired up in this tree,
+	  so enabling it only allocates memory. The stock input booster
+	  built into drivers/input/input.c is used instead; both define
+	  input_booster_init() and cannot be built together.
 
 comment "Input Device Drivers"
 
